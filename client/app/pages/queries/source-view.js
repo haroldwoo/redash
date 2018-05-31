@@ -40,6 +40,10 @@ function QuerySourceCtrl(
 
   $scope.canForkQuery = () => currentUser.hasPermission('edit_query') && !$scope.dataSource.view_only;
 
+  $scope.updateQuery = (newQueryText) => {
+    $scope.query.query = newQueryText;
+  };
+
   // @override
   $scope.saveQuery = (options, data) => {
     const savePromise = saveQuery(options, data);
