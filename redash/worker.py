@@ -16,10 +16,6 @@ celery = Celery('redash',
                 include='redash.tasks')
 
 celery_schedule = {
-    'health_status': {
-        'task': 'redash.tasks.health_status',
-        'schedule': timedelta(minutes=settings.HEALTH_QUERIES_REFRESH_SCHEDULE)
-    },
     'refresh_queries': {
         'task': 'redash.tasks.refresh_queries',
         'schedule': timedelta(seconds=30)
@@ -82,3 +78,11 @@ celery.Task = ContextTask
 def init_celery_flask_app(**kwargs):
     app = create_app()
     app.app_context().push()
+
+@celery.on_after_configure.connect
+def test(sender, **kwargs):
+    app = create_app()
+    for task in app.periodic_tasks.values():
+        interval = task["schedule"]
+        task = task["signature"]
+        sender.add_periodic_task(interval, task, name=task.name)
