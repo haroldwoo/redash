@@ -84,8 +84,7 @@
             {{ds.name}}
           </ui-select-choices>
         </ui-select>
-        <a ng-if="dataSource.options.doc_url != '' && dataSource.options.doc_url" ng-href={{dataSource.options.doc_url}}>{{dataSource.type_name}} documentation</a>
-        <span ng-if="dataSource.options.doc_url == '' || !dataSource.options.doc_url">{{ dataSource.type_name }} documentation</span>
+        <datasource-link></datasource-link>
         <get-data-source-version id='data-source-version'></get-data-source-version>
       </div>
 

@@ -72,6 +72,10 @@ case "$1" in
     shift
     server
     ;;
+  build_extensions)
+    shift
+    exec python /app/buildscript.py
+    ;;
   scheduler)
     shift
     scheduler
