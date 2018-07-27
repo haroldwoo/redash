@@ -7,6 +7,7 @@ machine:
       6.9.1
 dependencies:
   override:
+    - python buildscript.py
     - pip install --upgrade setuptools
     - pip install -r requirements_dev.txt
     - pip install -r requirements.txt

@@ -1,12 +1,34 @@
 import os
+import redash_stmo
 from subprocess import call
 from distutils.dir_util import copy_tree
 
-import redash_stmo
+from pkg_resources import iter_entry_points, resource_filename
 
-# Copy JS extensions into components
-redashSTMOPath = os.path.split(redash_stmo.__file__)[0]
-jsExtensionPath = os.path.realpath(os.path.join(redashSTMOPath, 'js'))
-copy_tree(jsExtensionPath, './client/app/components/')
+
+# Make a directory for extensions and set it as an environment variable
+# to be picked up by webpack.
+EXTENSIONS_RELATIVE_PATH = "client/app/extensions"
+EXTENSIONS_DIRECTORY = os.path.join(os.getcwd(), EXTENSIONS_RELATIVE_PATH)
+if not os.path.exists(EXTENSIONS_DIRECTORY):
+    os.makedirs(EXTENSIONS_DIRECTORY)
+os.environ["EXTENSIONS_DIRECTORY"] = EXTENSIONS_RELATIVE_PATH
+
+for entry_point in iter_entry_points('webpack.bundles'):
+	extension_data = entry_point.load()
+
+	# This is where the frontend code for an extension lives
+	# inside of its package.
+	content_folder_relative = os.path.join(
+		extension_data['extension_directory'],
+		extension_data['frontend_content'])
+	content_folder = resource_filename(redash_stmo.__name__, content_folder_relative)
+
+	# This is where we place our extensions folder.
+	destination = os.path.join(
+		EXTENSIONS_DIRECTORY,
+		extension_data['extension_directory'])
+
+	copy_tree(content_folder, destination)
 
 call("npm run build", shell=True)
